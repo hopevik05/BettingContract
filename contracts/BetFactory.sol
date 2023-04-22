@@ -18,8 +18,8 @@ contract BetFactory {
         refunded,
         cancelled
     }
-    address payable owner;
-    uint256 ownerFee;
+    address payable public owner;
+    uint256 public ownerFee;
     uint256 public trxBatchSize = 50;
     Bet[] public deployedBets;
 
@@ -34,20 +34,20 @@ contract BetFactory {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Caller is not an owner!");
+        require(msg.sender == owner, "UNAUTHORISED");
         _;
     }
 
-    function transferOwnerhip(address payable newOwner) external {
-        owner = newOwner;
+    function transferOwnerhip(address payable newOwner_) external onlyOwner {
+        owner = newOwner_;
     }
 
-    function updateTrxBatchSize(uint256 _trxBatchSize) external {
-        trxBatchSize = _trxBatchSize;
+    function updateTrxBatchSize(uint256 trxBatchSize_) external onlyOwner {
+        trxBatchSize = trxBatchSize_;
     }
 
-    function updateFee(uint256 newOwnerFee) external {
-        ownerFee = newOwnerFee;
+    function updateFee(uint256 ownerFee_) external onlyOwner {
+        ownerFee = ownerFee_;
     }
 
     function createBet(
@@ -74,5 +74,9 @@ contract BetFactory {
         );
         deployedBets.push(bet);
         emit BetCreated(msg.sender, newBetAddress);
+    }
+
+    function getAllBets() public view returns (Bet[] memory) {
+        return deployedBets;
     }
 }
